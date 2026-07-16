@@ -14,3 +14,4 @@ class Settings(BaseSettings):
     )
 
 settings = Settings()
+print("Gemini key loaded:", bool(settings.gemini_api_key))

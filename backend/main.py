@@ -13,6 +13,7 @@ from backend.api import deps
 from backend.repositories import crud
 from backend.schemas import schemas
 from backend.config import settings
+from backend.api.endpoints import calls
 
 # Setup logging
 logging.basicConfig(
@@ -57,6 +58,8 @@ def health_check():
     return {"status": "ok", "message": f"{settings.app_name} API is running"}
 
 # Organizations
+app.include_router(calls.router, prefix="/api/calls", tags=["calls"])
+
 @app.post("/api/organizations", response_model=schemas.Organization)
 def create_organization(org: schemas.OrganizationCreate, db: Session = Depends(deps.get_db)):
     try:
