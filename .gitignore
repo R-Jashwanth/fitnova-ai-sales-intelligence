@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Build output
+build/
+dist/
+
+# Test coverage
+coverage/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment variables
+.env*
+!.env.example
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# SQLite database (runtime data, not source)
+database/*.db
+
+# AI Studio internals
+assets/.aistudio/
+
+# IDE
+.vscode/
+.idea/

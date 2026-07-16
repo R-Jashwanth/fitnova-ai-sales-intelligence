@@ -1,0 +1,6 @@
+{
+  "name": "FitNova AI Sales Intelligence",
+  "description": "Enterprise-grade AI Sales Call Intelligence System for FitNova. End-to-end audio processing, transcript analysis, quality scoring, and dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
