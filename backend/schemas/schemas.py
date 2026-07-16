@@ -77,6 +77,43 @@ class IssueTag(IssueTagBase):
     created_at: datetime
     model_config = ConfigDict(from_attributes=True)
 
+# --- Transcripts ---
+class TranscriptBase(BaseModel):
+    call_id: int
+    full_text: str
+    utterances_json: Optional[str] = None
+
+class Transcript(TranscriptBase):
+    id: int
+    created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+# --- Scores ---
+class ScoreBase(BaseModel):
+    call_id: int
+    needs_discovery: float = 0.0
+    product_knowledge: float = 0.0
+    rapport: float = 0.0
+    empathy: float = 0.0
+    objection_handling: float = 0.0
+    compliance: float = 0.0
+    closing: float = 0.0
+    trial_booking: float = 0.0
+    overall_score: float = 0.0
+
+class Score(ScoreBase):
+    id: int
+    created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+class CallDetail(Call):
+    advisor: Optional[Advisor] = None
+    transcript: Optional[Transcript] = None
+    score: Optional[Score] = None
+    issues: List[IssueTag] = []
+    model_config = ConfigDict(from_attributes=True)
+
+
 # --- Appeals ---
 class AppealBase(BaseModel):
     issue_tag_id: int

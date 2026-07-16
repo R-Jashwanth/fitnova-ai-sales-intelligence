@@ -12,23 +12,23 @@ logger = logging.getLogger(__name__)
 
 class PipelineService:
     @staticmethod
-    async def process_call(db: Session, call_id: int):
-        """
-        End-to-end pipeline for processing a call audio file.
-        """
-        call = db.query(Call).filter(Call.id == call_id).first()
-        if not call:
-            logger.error(f"Call with ID {call_id} not found for processing.")
-            return
-
+    async def process_call(call_id: int):
+        from backend.database import SessionLocal
+        db = SessionLocal()
         try:
+            """
+            End-to-end pipeline for processing a call audio file.
+            """
+            call = db.query(Call).filter(Call.id == call_id).first()
+            if not call:
+                logger.error(f"Call with ID {call_id} not found for processing.")
+                return
+
             # 1. Update status to PROCESSING
             call.status = CallStatus.PROCESSING.value
             db.commit()
 
             # 2. Transcription (Mocked/Interface)
-            # In a real scenario, this might return timestamps and speakers directly.
-            # Here we follow the modular requirement by calling Diarization separately.
             full_text = await TranscriptionService.transcribe(call.audio_url)
             
             # 3. Speaker Diarization
@@ -47,10 +47,12 @@ class PipelineService:
                 utterances_json=json.dumps(clean_utterances)
             )
             db.add(transcript_record)
-            db.commit()
 
-            # 6. Gemini Analysis
-            analysis_result = AnalysisService.analyze_transcript(clean_full_text, clean_utterances)
+            # 6. Gemini Analysis (Run in thread to prevent blocking event loop)
+            import asyncio
+            analysis_result = await asyncio.to_thread(
+                AnalysisService.analyze_transcript, clean_full_text, clean_utterances
+            )
 
             # 7. Database Storage for Analysis
             score_data = analysis_result.get("score_breakdown", {})
@@ -94,3 +96,5 @@ class PipelineService:
             if call:
                 call.status = CallStatus.FAILED.value
                 db.commit()
+        finally:
+            db.close()

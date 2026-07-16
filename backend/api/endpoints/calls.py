@@ -59,15 +59,25 @@ async def upload_call(
 
     # 3. Start processing pipeline in background
     # This prevents blocking the HTTP response while LLM/Transcription runs
-    background_tasks.add_task(PipelineService.process_call, db, call.id)
+    background_tasks.add_task(PipelineService.process_call, call.id)
 
+    return call
+
+@router.get("/{call_id}", response_model=schemas.CallDetail)
+def read_call(call_id: int, db: Session = Depends(deps.get_db)):
+    call = db.query(crud.call.model).filter(crud.call.model.id == call_id).first()
+    if not call:
+        raise HTTPException(status_code=404, detail="Call not found")
     return call
 
 @router.get("", response_model=list[schemas.Call])
 @router.get("/", response_model=list[schemas.Call], include_in_schema=False)
 def read_calls(skip: int = 0, limit: int = 100, db: Session = Depends(deps.get_db)):
     try:
-        return crud.call.get_multi(db=db, skip=skip, limit=limit)
+        # Include advisor relationship optionally or just return base models
+        calls = db.query(crud.call.model).offset(skip).limit(limit).all()
+        return calls
     except Exception as e:
         logger.error(f"Failed to read calls: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+

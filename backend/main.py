@@ -53,6 +53,8 @@ app.add_middleware(
 )
 
 # API Endpoints
+app.mount("/api/uploads", StaticFiles(directory="uploads"), name="uploads")
+
 @app.get("/api/health")
 def health_check():
     return {"status": "ok", "message": f"{settings.app_name} API is running"}

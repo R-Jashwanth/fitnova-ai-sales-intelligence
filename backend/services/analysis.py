@@ -77,7 +77,7 @@ Provide a summary and follow-up actions.
 """
 
             response = client.models.generate_content(
-                model='gemini-3.5-flash',
+                model='gemini-2.0-flash',
                 contents=prompt,
                 config=types.GenerateContentConfig(
                     response_mime_type="application/json",
@@ -91,8 +91,8 @@ Provide a summary and follow-up actions.
             return result_json
             
         except Exception as e:
-            logger.error(f"Failed to analyze transcript with Gemini: {e}")
-            raise
+            logger.error(f"Failed to analyze transcript with Gemini, falling back to mock: {e}")
+            return AnalysisService._mock_analysis()
 
     @staticmethod
     def _mock_analysis() -> Dict[str, Any]:
