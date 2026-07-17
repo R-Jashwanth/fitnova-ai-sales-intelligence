@@ -32,7 +32,10 @@ class PipelineService:
             full_text = await TranscriptionService.transcribe(call.audio_url)
             
             # 3. Speaker Diarization
-            raw_utterances = await DiarizationService.diarize(call.audio_url)
+            raw_utterances = await DiarizationService.diarize(
+                 call.audio_url,
+                 full_text
+            )
             
             # 4 & 5. Transcript Cleaning & PII Redaction
             clean_utterances = CleaningService.process(raw_utterances)
